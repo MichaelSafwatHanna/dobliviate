@@ -1,3 +1,7 @@
+import 'dart:io';
+
+import 'package:dobliviate/GalleryInvoker.dart';
+import 'package:dobliviate/Image.dart' as dobliviate;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -10,12 +14,13 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'DObivialte',
       theme: ThemeData(
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+      debugShowCheckedModeBanner: false,
+      home: MyHomePage(title: 'DObliviate'),
     );
   }
 }
@@ -29,7 +34,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  PermissionStatus _status;
+  List images = List<dobliviate.Image>();
 
   @override
   void initState() {
@@ -42,21 +47,22 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
+        backgroundColor: Colors.black,
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_status',
-              style: Theme.of(context).textTheme.headline4,
-            ),
-          ],
-        ),
-      ),
+      body: GridView.count(
+          crossAxisCount: 3,
+          padding: const EdgeInsets.all(4.0),
+          mainAxisSpacing: 4.0,
+          crossAxisSpacing: 4.0,
+          children: List<Container>.generate(
+              images.length,
+              (int index) => Container(
+                      child: Image.file(
+                    File(images[index].uri),
+                    width: 100,
+                    height: 100,
+                    fit: BoxFit.contain,
+                  )))),
     );
   }
 
@@ -65,10 +71,15 @@ class _MyHomePageState extends State<MyHomePage> {
       if (value == PermissionStatus.denied) {
         SystemChannels.platform.invokeMethod('SystemNavigator.pop');
       } else {
-        setState(() {
-          _status = value;
-        });
+        _loadImagesUri();
       }
+    });
+  }
+
+  void _loadImagesUri() async {
+    List<dobliviate.Image> temp = await GalleryPlatformInvoker.getTodayImages;
+    setState(() {
+      this.images = temp;
     });
   }
 }

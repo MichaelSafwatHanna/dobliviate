@@ -1,10 +1,11 @@
 import 'dart:io';
 
-import 'package:dobliviate/GalleryInvoker.dart';
 import 'package:dobliviate/Image.dart' as dobliviate;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:dobliviate/blocs/images_loader_bloc/bloc.dart';
 
 void main() {
   runApp(MyApp());
@@ -20,7 +21,9 @@ class MyApp extends StatelessWidget {
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       debugShowCheckedModeBanner: false,
-      home: MyHomePage(title: 'DObliviate'),
+      home: BlocProvider(
+          create: (context) => ImagesLoaderBloc(),
+          child: MyHomePage(title: 'DObliviate')),
     );
   }
 }
@@ -45,25 +48,36 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-        backgroundColor: Colors.black,
-      ),
-      body: GridView.count(
-          crossAxisCount: 3,
-          padding: const EdgeInsets.all(4.0),
-          mainAxisSpacing: 4.0,
-          crossAxisSpacing: 4.0,
-          children: List<Container>.generate(
-              images.length,
-              (int index) => Container(
-                      child: Image.file(
-                    File(images[index].uri),
-                    width: 100,
-                    height: 100,
-                    fit: BoxFit.contain,
-                  )))),
-    );
+        appBar: AppBar(
+          title: Text(widget.title),
+          backgroundColor: Colors.black,
+        ),
+        body: Center(
+          child:
+              BlocBuilder<ImagesLoaderBloc, ImagesLoaderState>(builder: (context, state) {
+            if (state is ImagesLoading || state is ImagesEmpty) {
+              return CircularProgressIndicator();
+            } else if (state is ImagesLoaded) {
+              images = state.images;
+              return GridView.count(
+                  crossAxisCount: 3,
+                  padding: const EdgeInsets.all(4.0),
+                  mainAxisSpacing: 4.0,
+                  crossAxisSpacing: 4.0,
+                  children: List<Container>.generate(
+                      images.length,
+                      (int index) => Container(
+                              child: Image.file(
+                            File(images[index].uri),
+                            width: 100,
+                            height: 100,
+                            fit: BoxFit.contain,
+                          ))));
+            } else {
+              return Text("Something went wrong");
+            }
+          }),
+        ));
   }
 
   void _requestPermissions() async {
@@ -71,15 +85,8 @@ class _MyHomePageState extends State<MyHomePage> {
       if (value == PermissionStatus.denied) {
         SystemChannels.platform.invokeMethod('SystemNavigator.pop');
       } else {
-        _loadImagesUri();
+        BlocProvider.of<ImagesLoaderBloc>(context).add(RefreshImages());
       }
-    });
-  }
-
-  void _loadImagesUri() async {
-    List<dobliviate.Image> temp = await GalleryPlatformInvoker.getTodayImages;
-    setState(() {
-      this.images = temp;
     });
   }
 }

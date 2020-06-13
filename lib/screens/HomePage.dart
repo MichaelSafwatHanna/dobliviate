@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:dobliviate/blocs/images_loader_bloc/bloc.dart';
 import 'package:dobliviate/blocs/permission_bloc/bloc.dart';
+import 'package:dobliviate/widgets/ImagesGrid.dart';
 import 'package:dobliviate/widgets/RequestPermission.dart';
-import 'package:dobliviate/widgets/imagesGrid.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:permission_handler/permission_handler.dart';

@@ -3,6 +3,7 @@ class ImageInfo {
   String _displayName;
   DateTime _dateAdded;
   String _title;
+  bool isSelected = false;
 
   ImageInfo(this._uri, this._displayName, this._dateAdded, this._title);
 

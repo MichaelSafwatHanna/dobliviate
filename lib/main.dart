@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:dobliviate/Image.dart' as dobliviate;
@@ -38,11 +39,13 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   List images = List<dobliviate.Image>();
+  Completer<void> _refreshCompleter;
 
   @override
   void initState() {
     super.initState();
     _requestPermissions();
+    _refreshCompleter = Completer<void>();
   }
 
   @override
@@ -52,31 +55,39 @@ class _MyHomePageState extends State<MyHomePage> {
           title: Text(widget.title),
           backgroundColor: Colors.black,
         ),
-        body: Center(
-          child:
-              BlocBuilder<ImagesLoaderBloc, ImagesLoaderState>(builder: (context, state) {
-            if (state is ImagesLoading || state is ImagesEmpty) {
-              return CircularProgressIndicator();
-            } else if (state is ImagesLoaded) {
-              images = state.images;
-              return GridView.count(
-                  crossAxisCount: 3,
-                  padding: const EdgeInsets.all(4.0),
-                  mainAxisSpacing: 4.0,
-                  crossAxisSpacing: 4.0,
-                  children: List<Container>.generate(
-                      images.length,
-                      (int index) => Container(
-                              child: Image.file(
-                            File(images[index].uri),
-                            width: 100,
-                            height: 100,
-                            fit: BoxFit.contain,
-                          ))));
-            } else {
-              return Text("Something went wrong");
-            }
-          }),
+        body: RefreshIndicator(
+          onRefresh: (){
+            BlocProvider.of<ImagesLoaderBloc>(context).add(RefreshImages());
+            return _refreshCompleter.future;
+          } ,
+          child: Center(
+            child:
+                BlocBuilder<ImagesLoaderBloc, ImagesLoaderState>(builder: (context, state) {
+              if (state is ImagesLoading || state is ImagesEmpty) {
+                return CircularProgressIndicator();
+              } else if (state is ImagesLoaded) {
+                _refreshCompleter?.complete();
+                _refreshCompleter = Completer();
+                images = state.images;
+                return GridView.count(
+                    crossAxisCount: 3,
+                    padding: const EdgeInsets.all(4.0),
+                    mainAxisSpacing: 4.0,
+                    crossAxisSpacing: 4.0,
+                    children: List<Container>.generate(
+                        images.length,
+                        (int index) => Container(
+                                child: Image.file(
+                              File(images[index].uri),
+                              width: 100,
+                              height: 100,
+                              fit: BoxFit.contain,
+                            ))));
+              } else {
+                return Text("Something went wrong");
+              }
+            }),
+          ),
         ));
   }
 

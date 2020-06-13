@@ -1,3 +1,4 @@
+import 'package:dobliviate/models/ImageInfo.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 
@@ -12,7 +13,7 @@ class ImagesEmpty extends ImagesLoaderState {}
 class ImagesLoading extends ImagesLoaderState {}
 
 class ImagesLoaded extends ImagesLoaderState {
-  final List images;
+  final List<ImageInfo> images;
 
   ImagesLoaded({@required this.images}) : assert(images != null);
 

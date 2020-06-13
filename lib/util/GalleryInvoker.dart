@@ -1,4 +1,4 @@
-import 'package:dobliviate/Image.dart';
+import 'package:dobliviate/models/ImageInfo.dart';
 import 'package:flutter/services.dart';
 
 class GalleryPlatformInvoker {
@@ -7,10 +7,10 @@ class GalleryPlatformInvoker {
   static Future<Object> get getTodayImages async {
     Map<dynamic, dynamic> todayImagesMap =
         await _channel.invokeMethod('getTodayImages');
-    List<Image> images = List();
+    List<ImageInfo> images = List();
     int imagesCount = (todayImagesMap["URI"] as List).length;
     for (int i = 0; i < imagesCount; i++) {
-      images.add(Image(
+      images.add(ImageInfo(
           (todayImagesMap["URI"] as List)[i],
           (todayImagesMap["DISPLAY_NAME"] as List)[i],
           DateTime.parse((todayImagesMap["DATE_ADDED"] as List)[i]),

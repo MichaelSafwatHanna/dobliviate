@@ -22,6 +22,20 @@ class ImagesLoaderBloc extends Bloc<ImagesLoaderEvent, ImagesLoaderState> {
       } catch (_) {
         yield ImagesError();
       }
+    } else if (event is SelectAll) {
+      if (state is ImagesLoaded) {
+        final List<ImageInfo> selectedImages = (state as ImagesLoaded)
+            .images
+            .map((image) => image.copyWith(isSelected: true))
+            .toList();
+        yield ImagesLoaded(images: selectedImages);
+      }
+    } else if (event is DeSelectAll) {
+      final List<ImageInfo> selectedImages = (state as ImagesLoaded)
+          .images
+          .map((image) => image.copyWith(isSelected: false))
+          .toList();
+      yield ImagesLoaded(images: selectedImages);
     }
   }
 }

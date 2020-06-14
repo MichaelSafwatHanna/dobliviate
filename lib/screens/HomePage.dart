@@ -18,6 +18,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   Completer<void> _refreshCompleter;
+  bool _isSelectedAll = false;
 
   @override
   void initState() {
@@ -32,6 +33,11 @@ class _MyHomePageState extends State<MyHomePage> {
         appBar: AppBar(
           title: Text(widget.title),
           backgroundColor: Colors.black,
+          actions: <Widget>[
+            IconButton(
+                icon: Icon(Icons.select_all, color: Colors.white),
+                onPressed: () => _selectAll(context))
+          ],
         ),
         body: RefreshIndicator(
           onRefresh: () {
@@ -63,5 +69,15 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           ),
         ));
+  }
+
+  void _selectAll(BuildContext context) {
+    if (_isSelectedAll) {
+      BlocProvider.of<ImagesLoaderBloc>(context).add(DeSelectAll());
+      _isSelectedAll = false;
+    } else {
+      BlocProvider.of<ImagesLoaderBloc>(context).add(SelectAll());
+      _isSelectedAll = true;
+    }
   }
 }

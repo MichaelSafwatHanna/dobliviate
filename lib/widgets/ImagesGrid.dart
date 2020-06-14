@@ -48,6 +48,7 @@ class _ImageGridState extends State<ImagesGrid> {
                           child: Image.file(
                             File(widget.images[index].uri),
                             fit: BoxFit.cover,
+                            cacheWidth: 512,
                           ),
                         ),
                       ),

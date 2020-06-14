@@ -24,11 +24,11 @@ class MainActivity : FlutterActivity() {
 
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL).setMethodCallHandler { call, result ->
 
-            if (call.method == "getTodayImages") {
-                val todayImages = getTodayImages()
-                
-                if (todayImages != null) {
-                    result.success(todayImages)
+            if (call.method == "getImages") {
+                val secondsRange: Int? = call.argument("secondsRange")
+                val imagesInfoMap = getImages(secondsRange!!)
+                if (imagesInfoMap != null) {
+                    result.success(imagesInfoMap)
                 } else {
                     result.error("UNAVAILABLE", "Error Loading images", null)
                 }
@@ -40,8 +40,8 @@ class MainActivity : FlutterActivity() {
         }
     }
 
-    private fun getTodayImages(): HashMap<String, List<String>> {
-        val DAY_MS = 24 * 60 * 60
+    private fun getImages(secondsRange: Int): HashMap<String, List<String>> {
+
         val allImageInfoList = HashMap<String, List<String>>()
         val allImageList = ArrayList<String>()
         val displayNameList = ArrayList<String>()
@@ -55,8 +55,8 @@ class MainActivity : FlutterActivity() {
                 MediaStore.Images.ImageColumns.TITLE
         )
         val selection = "${MediaStore.Images.Media.DATE_ADDED} >= ?"
-        val dayInMs = ((System.currentTimeMillis()) / 1000) - DAY_MS
-        val selectionArgs = arrayOf(dayInMs.toString())
+        val timeRange = ((System.currentTimeMillis()) / 1000) - secondsRange
+        val selectionArgs = arrayOf(timeRange.toString())
         val sortOrder = "${MediaStore.Images.Media.DATE_ADDED} DESC"
 
         applicationContext.contentResolver.query(

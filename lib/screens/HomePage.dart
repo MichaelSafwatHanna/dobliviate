@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:dobliviate/blocs/images_loader_bloc/bloc.dart';
+import 'package:dobliviate/blocs/images_bloc/bloc.dart';
 import 'package:dobliviate/blocs/permission_bloc/bloc.dart';
 import 'package:dobliviate/widgets/ImagesGrid.dart';
 import 'package:dobliviate/widgets/RequestPermission.dart';
@@ -23,7 +23,6 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    BlocProvider.of<PermissionBloc>(context).add(CheckStoragePermission());
     _refreshCompleter = Completer<void>();
   }
 
@@ -41,7 +40,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         body: RefreshIndicator(
           onRefresh: () {
-            BlocProvider.of<ImagesLoaderBloc>(context).add(RefreshImages());
+            BlocProvider.of<ImagesBloc>(context).add(RefreshImages());
             return _refreshCompleter.future;
           },
           child: Center(
@@ -50,13 +49,13 @@ class _MyHomePageState extends State<MyHomePage> {
                 if (state != PermissionStatus.granted) {
                   return RequestPermission();
                 } else {
-                  BlocProvider.of<ImagesLoaderBloc>(context)
+                  BlocProvider.of<ImagesBloc>(context)
                       .add(RefreshImages());
-                  return BlocBuilder<ImagesLoaderBloc, ImagesLoaderState>(
+                  return BlocBuilder<ImagesBloc, ImagesState>(
                       builder: (context, state) {
-                    if (state is ImagesLoading || state is ImagesEmpty) {
+                    if (state is ImagesLoadInProgress || state is ImagesEmpty) {
                       return CircularProgressIndicator();
-                    } else if (state is ImagesLoaded) {
+                    } else if (state is ImagesLoadSuccess) {
                       _refreshCompleter?.complete();
                       _refreshCompleter = Completer();
                       return ImagesGrid(images: state.images);
@@ -73,10 +72,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _selectAll(BuildContext context) {
     if (_isSelectedAll) {
-      BlocProvider.of<ImagesLoaderBloc>(context).add(DeSelectAll());
+      BlocProvider.of<ImagesBloc>(context).add(DeselectAllImages());
       _isSelectedAll = false;
     } else {
-      BlocProvider.of<ImagesLoaderBloc>(context).add(SelectAll());
+      BlocProvider.of<ImagesBloc>(context).add(SelectAllImages());
       _isSelectedAll = true;
     }
   }

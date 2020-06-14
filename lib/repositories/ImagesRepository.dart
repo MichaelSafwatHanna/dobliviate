@@ -1,12 +1,14 @@
 import 'package:dobliviate/models/ImageInfo.dart';
 import 'package:flutter/services.dart';
 
-class GalleryPlatformInvoker {
+class ImagesRepository {
   static const _channel = const MethodChannel('dobliviate.dobliviate/gallery');
+  static const int DAY = 24 * 60 * 60;
 
-  static Future<Object> get getTodayImages async {
-    Map<dynamic, dynamic> todayImagesMap =
-        await _channel.invokeMethod('getTodayImages');
+  static Future<Object> get({int secondsRange = DAY}) async {
+    Map<dynamic, dynamic> todayImagesMap = await _channel
+        .invokeMethod('getImages', {"secondsRange": secondsRange});
+
     List<ImageInfo> images = List();
     int imagesCount = (todayImagesMap["URI"] as List).length;
     for (int i = 0; i < imagesCount; i++) {

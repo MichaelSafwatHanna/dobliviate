@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:dobliviate/blocs/images_bloc/bloc.dart';
 import 'package:dobliviate/blocs/permission_bloc/bloc.dart';
 import 'package:dobliviate/widgets/ImagesGrid.dart';
+import 'package:dobliviate/widgets/MultiFab.dart';
 import 'package:dobliviate/widgets/RequestPermission.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -38,6 +39,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 onPressed: () => _selectAll(context))
           ],
         ),
+        floatingActionButton: MultiFab(),
         body: RefreshIndicator(
           onRefresh: () {
             BlocProvider.of<ImagesBloc>(context).add(RefreshImages());
@@ -49,8 +51,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 if (state != PermissionStatus.granted) {
                   return RequestPermission();
                 } else {
-                  BlocProvider.of<ImagesBloc>(context)
-                      .add(RefreshImages());
+                  BlocProvider.of<ImagesBloc>(context).add(RefreshImages());
                   return BlocBuilder<ImagesBloc, ImagesState>(
                       builder: (context, state) {
                     if (state is ImagesLoadInProgress || state is ImagesEmpty) {

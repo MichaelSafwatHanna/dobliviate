@@ -1,9 +1,11 @@
 import 'dart:io';
 
+import 'package:dobliviate/blocs/images_bloc/bloc.dart';
 import 'package:dobliviate/models/ImageInfo.dart' as dobliviate;
 import 'package:dobliviate/widgets/ScaledImage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ImagesGrid extends StatefulWidget {
   final List<dobliviate.ImageInfo> images;
@@ -33,6 +35,13 @@ class _ImageGridState extends State<ImagesGrid> {
                         widget.images[index].isSelected =
                             !widget.images[index].isSelected;
                       });
+
+                      if (widget.images[index].isSelected) {
+                        BlocProvider.of<ImagesBloc>(context).add(SelectImage());
+                      } else {
+                        BlocProvider.of<ImagesBloc>(context)
+                            .add(DeselectImage());
+                      }
                     },
                     onLongPress: () {
                       Navigator.of(context).push(new MaterialPageRoute(

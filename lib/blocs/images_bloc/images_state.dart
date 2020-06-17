@@ -14,11 +14,13 @@ class ImagesLoadInProgress extends ImagesState {}
 
 class ImagesLoadSuccess extends ImagesState {
   final List<ImageInfo> images;
+  final int selected;
 
-  ImagesLoadSuccess({@required this.images}) : assert(images != null);
+  ImagesLoadSuccess({@required this.images, @required this.selected})
+      : assert(images != null && selected != null);
 
   @override
-  List<Object> get props => [images];
+  List<Object> get props => [images, selected];
 }
 
 class ImagesLoadFailure extends ImagesState {}

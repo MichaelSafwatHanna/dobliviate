@@ -19,6 +19,8 @@ class ImagesBloc extends Bloc<ImagesEvent, ImagesState> {
       yield* _mapSelectAllImagesToState(state);
     } else if (event is DeselectAllImages) {
       yield* _mapDeSelectAllImagesToState(state);
+    } else if (event is DeleteImages) {
+      yield* _mapDeleteImagesToState(state);
     }
   }
 
@@ -47,6 +49,19 @@ class ImagesBloc extends Bloc<ImagesEvent, ImagesState> {
           .map((image) => image.copyWith(isSelected: false))
           .toList();
       yield ImagesLoadSuccess(images: selectedImages);
+    }
+  }
+
+  Stream<ImagesState> _mapDeleteImagesToState(ImagesState state) async* {
+    if (state is ImagesLoadSuccess) {
+      yield ImagesLoadInProgress();
+      final List<ImageInfo> delete =
+          state.images.where((image) => image.isSelected).toList();
+      delete.forEach((element) async {
+        await ImagesRepository.delete(element.uri);
+      });
+      yield ImagesLoadSuccess(
+          images: state.images.where((image) => !image.isSelected).toList());
     }
   }
 }

@@ -20,4 +20,8 @@ class ImagesRepository {
     }
     return images;
   }
+
+  static Future<void> delete(String uri) async {
+    await _channel.invokeMethod('deleteImage', {"uri": uri});
+  }
 }

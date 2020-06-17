@@ -15,7 +15,6 @@ import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 
-
 class MainActivity : FlutterActivity() {
     private val CHANNEL = "dobliviate.dobliviate/gallery"
 
@@ -33,6 +32,15 @@ class MainActivity : FlutterActivity() {
                     result.error("UNAVAILABLE", "Error Loading images", null)
                 }
 
+            } else if (call.method == "deleteImage") {
+                val uri: String? = call.argument("uri")
+                val rowsDeleted = deleteImage(uri!!)
+                result.success(rowsDeleted)
+                if (rowsDeleted == 1) {
+                    result.success(rowsDeleted)
+                } else {
+                    result.error("UNAVAILABLE", "Error deleting image", null)
+                }
             } else {
                 result.notImplemented()
             }
@@ -78,5 +86,12 @@ class MainActivity : FlutterActivity() {
             allImageInfoList["TITLE"] = titleList
         }
         return allImageInfoList
+    }
+
+    private fun deleteImage(uri: String): Int {
+        return contentResolver.delete(
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                MediaStore.Images.ImageColumns.DATA + "= ?", arrayOf(uri)
+        )
     }
 }

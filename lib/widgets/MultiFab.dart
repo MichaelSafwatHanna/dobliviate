@@ -1,4 +1,7 @@
+import 'package:dobliviate/blocs/images_bloc/bloc.dart';
+import 'package:dobliviate/widgets/ConfirmDeletion.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class MultiFab extends StatefulWidget {
   @override
@@ -8,6 +11,8 @@ class MultiFab extends StatefulWidget {
 class _MultiFabState extends State<MultiFab>
     with SingleTickerProviderStateMixin {
   bool expanded = false;
+  ImagesBloc _imagesBloc;
+
   AnimationController _animationController;
   Animation<double> _animateIcon;
   Animation<double> _translateButton;
@@ -15,11 +20,13 @@ class _MultiFabState extends State<MultiFab>
   @override
   initState() {
     super.initState();
+    _imagesBloc = BlocProvider.of<ImagesBloc>(context);
+
     _animationController =
-        AnimationController(duration: Duration(milliseconds: 256), vsync: this)
-          ..addListener(() {
-            setState(() {});
-          });
+    AnimationController(duration: Duration(milliseconds: 256), vsync: this)
+      ..addListener(() {
+        setState(() {});
+      });
 
     _animateIcon =
         Tween<double>(begin: 0.0, end: 1.0).animate(_animationController);
@@ -76,7 +83,18 @@ class _MultiFabState extends State<MultiFab>
               backgroundColor: Colors.blue,
               mini: true,
               tooltip: "Delete",
-              onPressed: _expand,
+              onPressed: () {
+                if ((_imagesBloc.state is ImagesLoadSuccess) &&
+                    (_imagesBloc.state as ImagesLoadSuccess).selected > 0) {
+                  _showMyDialog();
+                  _expand();
+                } else {
+                  Scaffold.of(context).showSnackBar(SnackBar(
+                    content: Text("Select Images!"),
+                    backgroundColor: Colors.black,
+                  ));
+                }
+              },
               heroTag: "delete",
               child: Icon(Icons.delete_forever),
             )),
@@ -92,6 +110,19 @@ class _MultiFabState extends State<MultiFab>
         ),
       ],
     );
+  }
+
+  Future<void> _showMyDialog() {
+    return showDialog<void>(
+        context: context,
+        barrierDismissible: false, // user must tap button!
+        builder: (BuildContext context) {
+          return ConfirmDeletion(
+            onPressPositive: (() {
+              _imagesBloc.add(DeleteImages());
+            }),
+          );
+        });
   }
 
   void _expand() {

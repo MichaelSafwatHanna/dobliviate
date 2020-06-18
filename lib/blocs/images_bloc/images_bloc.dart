@@ -32,7 +32,11 @@ class ImagesBloc extends Bloc<ImagesEvent, ImagesState> {
     yield ImagesLoadInProgress();
     try {
       final List<ImageInfo> images = await ImagesRepository.get();
-      yield ImagesLoadSuccess(images: images, selected: 0);
+      if (images.isEmpty) {
+        yield ImagesEmpty();
+      } else {
+        yield ImagesLoadSuccess(images: images, selected: 0);
+      }
     } catch (_) {
       yield ImagesLoadFailure();
     }
@@ -79,8 +83,14 @@ class ImagesBloc extends Bloc<ImagesEvent, ImagesState> {
       delete.forEach((element) async {
         await ImagesRepository.delete(element.uri);
       });
-      yield ImagesLoadSuccess(
-          images: state.images.where((image) => !image.isSelected).toList(), selected: 0);
+
+      if (delete.length == state.images.length) {
+        yield ImagesEmpty();
+      } else {
+        yield ImagesLoadSuccess(
+            images: state.images.where((image) => !image.isSelected).toList(),
+            selected: 0);
+      }
     }
   }
 }

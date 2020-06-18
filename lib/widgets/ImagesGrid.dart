@@ -53,13 +53,16 @@ class _ImageGridState extends State<ImagesGrid> {
                       fit: StackFit.passthrough,
                       alignment: Alignment.center,
                       children: <Widget>[
-                        Container(
+                        AnimatedContainer(
                           decoration: BoxDecoration(
                             border: Border.all(
-                              color: Colors.black,
+                              color: widget.images[index].isSelected
+                                  ? Colors.white
+                                  : Colors.black,
                               width: widget.images[index].isSelected ? 8 : 0,
                             ),
                           ),
+                          duration: const Duration(milliseconds: 256),
                           child: AnimatedOpacity(
                             duration: const Duration(milliseconds: 256),
                             opacity: widget.images[index].isSelected ? 0.5 : 1,
@@ -76,7 +79,7 @@ class _ImageGridState extends State<ImagesGrid> {
                             Icons.clear,
                             size: 36,
                             color: widget.images[index].isSelected
-                                ? Colors.black
+                                ? Colors.white
                                 : Colors.transparent,
                           ),
                         )

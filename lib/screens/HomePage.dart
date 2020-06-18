@@ -3,10 +3,12 @@ import 'dart:async';
 import 'package:dobliviate/blocs/images_bloc/bloc.dart';
 import 'package:dobliviate/blocs/permission_bloc/bloc.dart';
 import 'package:dobliviate/widgets/ImagesGrid.dart';
+import 'package:dobliviate/widgets/ImagesListEmtpy.dart';
 import 'package:dobliviate/widgets/MultiFab.dart';
 import 'package:dobliviate/widgets/RequestPermission.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -31,7 +33,14 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text(widget.title),
+          title: Container(
+            child: SvgPicture.asset(
+              "assets/logo.svg",
+              color: Colors.white,
+              height: 40,
+            ),
+          ),
+          centerTitle: true,
           backgroundColor: Colors.black,
           actions: <Widget>[
             IconButton(
@@ -40,6 +49,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
         floatingActionButton: MultiFab(),
+        backgroundColor: Colors.black,
         body: RefreshIndicator(
           onRefresh: () {
             BlocProvider.of<ImagesBloc>(context).add(RefreshImages());
@@ -54,7 +64,11 @@ class _MyHomePageState extends State<MyHomePage> {
                   BlocProvider.of<ImagesBloc>(context).add(RefreshImages());
                   return BlocBuilder<ImagesBloc, ImagesState>(
                       builder: (context, state) {
-                    if (state is ImagesLoadInProgress || state is ImagesEmpty) {
+                    if (state is ImagesEmpty) {
+                      _refreshCompleter?.complete();
+                      _refreshCompleter = Completer();
+                      return EmptyImagesList();
+                    } else if (state is ImagesLoadInProgress) {
                       return CircularProgressIndicator();
                     } else if (state is ImagesLoadSuccess) {
                       _refreshCompleter?.complete();

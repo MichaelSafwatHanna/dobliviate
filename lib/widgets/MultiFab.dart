@@ -23,10 +23,10 @@ class _MultiFabState extends State<MultiFab>
     _imagesBloc = BlocProvider.of<ImagesBloc>(context);
 
     _animationController =
-    AnimationController(duration: Duration(milliseconds: 256), vsync: this)
-      ..addListener(() {
-        setState(() {});
-      });
+        AnimationController(duration: Duration(milliseconds: 256), vsync: this)
+          ..addListener(() {
+            setState(() {});
+          });
 
     _animateIcon =
         Tween<double>(begin: 0.0, end: 1.0).animate(_animationController);
@@ -52,13 +52,12 @@ class _MultiFabState extends State<MultiFab>
               0.0,
             ),
             child: FloatingActionButton(
-              backgroundColor: Colors.blue,
-              mini: true,
-              tooltip: "Time Range",
-              onPressed: _expand,
-              heroTag: "timerange",
-              child: Icon(Icons.history),
-            )),
+                backgroundColor: Colors.white,
+                mini: true,
+                tooltip: "Time Range",
+                onPressed: _expand,
+                heroTag: "timerange",
+                child: Icon(Icons.history, color: Colors.deepPurple))),
         Transform(
             transform: Matrix4.translationValues(
               0.0,
@@ -66,13 +65,12 @@ class _MultiFabState extends State<MultiFab>
               0.0,
             ),
             child: FloatingActionButton(
-              backgroundColor: Colors.blue,
-              mini: true,
-              tooltip: "Notification",
-              onPressed: _expand,
-              heroTag: "notification",
-              child: Icon(Icons.notifications),
-            )),
+                backgroundColor: Colors.white,
+                mini: true,
+                tooltip: "Notification",
+                onPressed: _expand,
+                heroTag: "notification",
+                child: Icon(Icons.notifications, color: Colors.deepPurple))),
         Transform(
             transform: Matrix4.translationValues(
               0.0,
@@ -80,26 +78,24 @@ class _MultiFabState extends State<MultiFab>
               0.0,
             ),
             child: FloatingActionButton(
-              backgroundColor: Colors.blue,
-              mini: true,
-              tooltip: "Delete",
-              onPressed: () {
-                if ((_imagesBloc.state is ImagesLoadSuccess) &&
-                    (_imagesBloc.state as ImagesLoadSuccess).selected > 0) {
-                  _showMyDialog();
-                  _expand();
-                } else {
-                  Scaffold.of(context).showSnackBar(SnackBar(
-                    content: Text("Select Images!"),
-                    backgroundColor: Colors.black,
-                  ));
-                }
-              },
-              heroTag: "delete",
-              child: Icon(Icons.delete_forever),
-            )),
+                backgroundColor: Colors.white,
+                mini: true,
+                tooltip: "Delete",
+                onPressed: () {
+                  if ((_imagesBloc.state is ImagesLoadSuccess) &&
+                      (_imagesBloc.state as ImagesLoadSuccess).selected > 0) {
+                    _showMyDialog();
+                    _expand();
+                  } else {
+                    Scaffold.of(context).showSnackBar(SnackBar(
+                      content: Text("Select Images!"),
+                      backgroundColor: Colors.black,
+                    ));
+                  }
+                },
+                heroTag: "delete",
+                child: Icon(Icons.delete_forever, color: Colors.deepPurple))),
         FloatingActionButton(
-          backgroundColor: Colors.blue,
           onPressed: _expand,
           tooltip: "Menu",
           heroTag: "menu",
